@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>极简导航 · Google 风格</title>
+<style type="text/css">
+/* ========== 极简样式 · 完美兼容古老浏览器 ========== */
+/* 无任何现代布局、圆角、阴影、动画、弹性或网格 */
+body {
+    background: #FFFFFF;
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 24px 16px;
+    padding: 0;
+}
+/* Google 彩色标题，无额外修饰 */
+h1 {
+    font-size: 1.8em;
+    font-weight: normal;
+    margin: 0 0 18px 0;
+    padding: 0;
+    text-align: center;
+}
+/* 搜索框容器：使用 HTML align="center" 保证 IE5+ 完美居中 */
+.search-wrapper {
+    margin: 0 0 24px 0;
+    padding: 0;
+}
+.search-form {
+    margin: 0;
+    padding: 0;
+}
+input, button {
+    font-family: inherit;
+    font-size: 0.9em;
+}
+input[type="text"] {
+    border: 1px solid #7F9DB9;
+    width: 260px;
+    padding: 3px;
+    margin: 0 6px 0 0;
+    background: #FFFFFF;
+}
+input[type="submit"] {
+    border: 1px solid #7F9DB9;
+    background: #EEEEEE;
+    cursor: pointer;
+    padding: 3px 10px;
+}
+/* 网址列表 —— 简单水平排列，自动换行，无项目符号 */
+.link-list {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+.link-list li {
+    display: inline;          /* 水平排列，古老浏览器完美支持 */
+    margin-right: 14px;      /* 链接之间的简单间隔 */
+    white-space: nowrap;     /* 每个链接文本不换行，整体自然换行 */
+}
+/* 链接保持传统蓝紫配色，无悬停特效，仅下划线 */
+a:link {
+    color: #0000EE;
+    text-decoration: underline;
+}
+a:visited {
+    color: #551A8B;
+    text-decoration: underline;
+}
+a:hover {
+    text-decoration: underline;
+}
+/* 无浮动、无定位、无任何多余修饰 */
+</style>
+</head>
+<body>
+
+<!-- Google 品牌标题，官方五色 -->
+<h1>
+    <span style="color:#4285F4;">G</span>
+    <span style="color:#EA4335;">o</span>
+    <span style="color:#FBBC05;">o</span>
+    <span style="color:#4285F4;">g</span>
+    <span style="color:#34A853;">l</span>
+    <span style="color:#EA4335;">e</span>
+</h1>
+
+<!-- 搜索框居中 (align 属性保证老旧浏览器完全居中) -->
+<div align="center" class="search-wrapper">
+    <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
+        <input type="text" name="q" size="30">
+        <input type="submit" value="Google 搜索">
+    </form>
+</div>
+
+<!-- 网址导航：简单水平排列，包含大量国外常用网站，无任何图标或装饰 -->
+<ul class="link-list">
+    <li><a href="https://www.google.com" target="_blank">Google</a></li>
+    <li><a href="https://www.bing.com" target="_blank">Bing</a></li>
+    <li><a href="https://www.yahoo.com" target="_blank">Yahoo</a></li>
+    <li><a href="https://www.wikipedia.org" target="_blank">Wikipedia</a></li>
+    <li><a href="https://github.com" target="_blank">GitHub</a></li>
+    <li><a href="https://www.youtube.com" target="_blank">YouTube</a></li>
+    <li><a href="https://www.reddit.com" target="_blank">Reddit</a></li>
+    <li><a href="https://www.twitter.com" target="_blank">Twitter</a></li>
+    <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
+    <li><a href="https://www.instagram.com" target="_blank">Instagram</a></li>
+    <li><a href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
+    <li><a href="https://www.netflix.com" target="_blank">Netflix</a></li>
+    <li><a href="https://www.amazon.com" target="_blank">Amazon</a></li>
+    <li><a href="https://www.ebay.com" target="_blank">eBay</a></li>
+    <li><a href="https://www.apple.com" target="_blank">Apple</a></li>
+    <li><a href="https://www.microsoft.com" target="_blank">Microsoft</a></li>
+    <li><a href="https://www.twitch.tv" target="_blank">Twitch</a></li>
+    <li><a href="https://stackoverflow.com" target="_blank">Stack Overflow</a></li>
+    <li><a href="https://www.paypal.com" target="_blank">PayPal</a></li>
+    <li><a href="https://www.quora.com" target="_blank">Quora</a></li>
+    <li><a href="https://www.dropbox.com" target="_blank">Dropbox</a></li>
+    <li><a href="https://www.spotify.com" target="_blank">Spotify</a></li>
+    <li><a href="https://www.tumblr.com" target="_blank">Tumblr</a></li>
+    <li><a href="https://www.pinterest.com" target="_blank">Pinterest</a></li>
+    <li><a href="https://www.imdb.com" target="_blank">IMDb</a></li>
+    <li><a href="https://www.cnn.com" target="_blank">CNN</a></li>
+    <li><a href="https://www.nytimes.com" target="_blank">NY Times</a></li>
+</ul>
+
+<!-- 
+    ============================================================
+    GitHub 部署说明：
+    1. 将此文件保存为 index.html
+    2. 在 GitHub 上创建一个仓库（例如 my-nav）
+    3. 上传此文件到仓库根目录
+    4. 启用 GitHub Pages（Settings → Pages → Branch: main）
+    5. 访问 https://你的用户名.github.io/仓库名/ 即可
+    本页面无任何外部依赖，无脚本，完美兼容所有古老浏览器。
+    ============================================================
+-->
+</body>
+</html>
