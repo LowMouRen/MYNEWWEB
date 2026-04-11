@@ -206,20 +206,17 @@ h1 {
 // 全局标志，防止刷新时重复点击
 var isRefreshing = false;
 
-// 渲染文件列表面板
-// files: 文件数组 [{name, url}]，若为 null 或空数组则显示空状态（下拉框提示）
-// errorMsg: 可选，显示错误信息（在提示框中显示）
-function renderFileListPanel(files, errorMsg) {
+// 渲染文件列表面板（无错误参数，错误通过 alert 显示）
+// files: 文件数组 [{name, url}]，若为 null 或空数组则显示空状态
+function renderFileListPanel(files) {
     var container = document.getElementById('secondaryDownloadArea');
     if (!container) return;
     
     var html = '<div style="background-color: rgba(238,238,238,0.9); border: 3px solid #7F9DB9; padding: 20px; display: inline-block; min-width: 320px;">';
     
-    // 判断是否有有效文件列表
     var hasFiles = (files && files.length > 0);
     
     if (hasFiles) {
-        // 有文件：显示下拉框和启用下载按钮
         html += '<select id="dynamicFileSelect" class="file-select" size="1">';
         for (var i = 0; i < files.length; i++) {
             var safeName = files[i].name.replace(/[&<>]/g, function(m) {
@@ -234,15 +231,13 @@ function renderFileListPanel(files, errorMsg) {
         html += '</select>';
         html += '<button class="download-submit" onclick="downloadSelectedFile()" id="downloadBtn">Download</button>';
     } else {
-        // 无文件：下拉框显示提示，下载按钮禁用
-        var placeholderText = errorMsg ? 'Error: ' + errorMsg : 'No files - click Refresh';
+        // 空状态：下拉框显示提示，下载按钮禁用
         html += '<select id="dynamicFileSelect" class="file-select" size="1" disabled>';
-        html += '<option value="">' + placeholderText + '</option>';
+        html += '<option value="">No files - click Refresh</option>';
         html += '</select>';
         html += '<button class="download-submit" onclick="downloadSelectedFile()" id="downloadBtn" disabled>Download</button>';
     }
     
-    // 底部的按钮行（Refresh 和 Close List）
     html += '<div style="margin-top: 15px;">';
     html += '<button class="refresh-btn" onclick="refreshFileListFromGitHub()" id="refreshButton">Refresh</button>';
     html += '<button class="close-btn" onclick="closeDownloadArea()">Close List</button>';
@@ -252,12 +247,10 @@ function renderFileListPanel(files, errorMsg) {
     container.innerHTML = html;
 }
 
-// 从 GitHub 获取文件列表并更新面板
+// 从 GitHub 获取文件列表并更新面板（错误使用 alert 提示）
 function refreshFileListFromGitHub() {
-    // 防止重复点击
     if (isRefreshing) return;
     
-    // 获取当前的 Refresh 按钮并禁用
     var refreshBtn = document.getElementById('refreshButton');
     if (refreshBtn) {
         refreshBtn.disabled = true;
@@ -266,26 +259,21 @@ function refreshFileListFromGitHub() {
     }
     isRefreshing = true;
     
-    // 在面板中显示加载中的提示（临时将下拉框改为加载状态，但不破坏整体结构）
+    // 显示加载中提示（临时修改下拉框）
     var container = document.getElementById('secondaryDownloadArea');
     if (container) {
-        // 临时保存当前内容，但为了体验，我们直接修改 select 的选项为加载中（如果 select 存在）
         var selectElem = document.getElementById('dynamicFileSelect');
         if (selectElem) {
-            // 保存原始禁用状态，然后临时改为加载选项
             var wasDisabled = selectElem.disabled;
             selectElem.disabled = true;
-            // 清空并添加加载选项
             selectElem.options.length = 0;
             var loadingOpt = document.createElement('option');
             loadingOpt.value = '';
             loadingOpt.text = 'Fetching from GitHub...';
             selectElem.appendChild(loadingOpt);
-            // 同时禁用下载按钮
             var downloadBtn = document.getElementById('downloadBtn');
             if (downloadBtn) downloadBtn.disabled = true;
         } else {
-            // 如果没有 select（理论上应该存在），则简单显示一个加载文本
             var loadingDiv = document.createElement('div');
             loadingDiv.id = 'tempLoadingMsg';
             loadingDiv.style.margin = '10px';
@@ -300,7 +288,6 @@ function refreshFileListFromGitHub() {
     xhr.open('GET', apiUrl, true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
-            // 移除临时加载消息（如果有）
             var tempMsg = document.getElementById('tempLoadingMsg');
             if (tempMsg) tempMsg.parentNode.removeChild(tempMsg);
             
@@ -318,42 +305,41 @@ function refreshFileListFromGitHub() {
                         }
                     }
                     if (fileList.length > 0) {
-                        renderFileListPanel(fileList, null);
+                        renderFileListPanel(fileList);
                     } else {
-                        renderFileListPanel(null, 'No files found in repository.');
+                        alert('No files found in the repository.');
+                        renderFileListPanel(null);
                     }
                 } catch(e) {
-                    renderFileListPanel(null, 'Failed to parse file list: ' + e.message);
+                    alert('Failed to parse file list: ' + e.message);
+                    renderFileListPanel(null);
                 }
             } else {
-                renderFileListPanel(null, 'HTTP error: ' + xhr.status + ' - Please check network or repository.');
+                alert('Unable to fetch file list. HTTP error: ' + xhr.status + '\nPlease check network or repository.');
+                renderFileListPanel(null);
             }
             isRefreshing = false;
-            // 重新渲染后按钮自动可用（因为生成了新的按钮）
         }
     };
     xhr.onerror = function() {
         var tempMsg = document.getElementById('tempLoadingMsg');
         if (tempMsg) tempMsg.parentNode.removeChild(tempMsg);
-        renderFileListPanel(null, 'Network request failed. Please check your internet connection.');
+        alert('Network request failed. Please check your internet connection.');
+        renderFileListPanel(null);
         isRefreshing = false;
     };
     xhr.send();
 }
 
-// 打开面板（初始状态显示空列表提示）
+// 打开面板（初始显示空列表）
 function loadAndShowFileList() {
     var container = document.getElementById('secondaryDownloadArea');
     if (!container) return;
-    
-    // 如果面板已经可见，则不做任何事
     if (container.style.display === 'block' && container.innerHTML !== '') {
         return;
     }
-    
     container.style.display = 'block';
-    // 初始渲染：无文件，无错误，显示默认提示
-    renderFileListPanel(null, null);
+    renderFileListPanel(null);
 }
 
 // 强制下载文件（兼容老浏览器）
@@ -388,7 +374,6 @@ function forceDownload(url, filename) {
 
 function downloadSelectedFile() {
     var select = document.getElementById('dynamicFileSelect');
-    // 如果下拉框被禁用或者没有有效值，则提示
     if (!select || select.disabled || !select.value || select.value === '') {
         alert('No file selected. Please click Refresh to load files first.');
         return;
@@ -421,6 +406,7 @@ function closeDownloadArea() {
     - 初始打开面板时，下拉框显示 "No files - click Refresh"，下载按钮禁用。
     - 点击 "Refresh" 按钮从 GitHub 获取文件列表，成功后填充下拉框并启用下载按钮。
     - Refresh 按钮在请求期间禁用，防止重复点击。
+    - 所有错误信息（网络错误、解析错误、无文件等）通过浏览器 alert 弹出，不显示在面板内。
     - 强制下载功能兼容老浏览器。
     ============================================================
 -->
