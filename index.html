@@ -9,13 +9,14 @@ body {
     background: #FFFFFF;
     color: #000000;
     font-family: Arial, Helvetica, sans-serif;
-    margin: 24px 16px;
+    margin: 30px 20px;
     padding: 0;
-    text-align: center;     /* 全局居中，所有块级内容自动居中（古老浏览器也支持） */
+    text-align: center;     /* 全局居中 */
+    font-size: 16px;        /* 基础字体调大 */
 }
-/* 搜索框容器不需要额外设置，全局居中已生效，但保留原有结构以防覆盖 */
+/* 搜索框容器 */
 .search-wrapper {
-    margin: 0 0 20px 0;
+    margin: 0 0 28px 0;
     padding: 0;
 }
 .search-form {
@@ -24,53 +25,65 @@ body {
 }
 input, button {
     font-family: inherit;
-    font-size: 0.9em;
+    font-size: 1.1em;       /* 输入框字体加大 */
 }
 input[type="text"] {
-    border: 1px solid #7F9DB9;
-    width: 280px;
-    padding: 3px;
-    margin: 0 6px 0 0;
+    border: 2px solid #7F9DB9;
+    width: 320px;           /* 更宽 */
+    padding: 8px 6px;
+    margin: 0 8px 0 0;
     background: #FFFFFF;
+    font-size: 1.1em;
 }
 input[type="submit"] {
-    border: 1px solid #7F9DB9;
+    border: 2px solid #7F9DB9;
     background: #EEEEEE;
     cursor: pointer;
-    padding: 3px 10px;
+    padding: 8px 16px;
+    font-size: 1.1em;
+    font-weight: bold;
 }
-/* 网址列表 —— 水平排列并居中 */
+/* 按钮样式 —— 用于所有链接（将链接变成按钮） */
+.button-link {
+    background-color: #EEEEEE;
+    border: 2px solid #7F9DB9;
+    color: #0000EE;
+    padding: 8px 18px;
+    text-decoration: none;      /* 去掉下划线更像按钮 */
+    display: inline-block;
+    margin: 4px 6px;
+    font-size: 1.1em;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+}
+/* 按钮的访问/悬停保持传统，悬停可稍改变背景（可选，不加特效也ok） */
+.button-link:hover {
+    background-color: #DDDDDD;
+    text-decoration: none;
+}
+.button-link:visited {
+    color: #551A8B;
+}
+/* 网址列表 —— 水平排列居中，每个列表项内的链接都变成按钮 */
 .link-list {
-    margin: 20px 0 0 0;
+    margin: 24px 0 0 0;
     padding: 0;
     list-style-type: none;
-    text-align: center;     /* 使列表内容居中 */
+    text-align: center;
 }
 .link-list li {
     display: inline;        /* 水平排列 */
-    margin-right: 14px;     /* 链接间隔 */
+    margin: 0;
     white-space: nowrap;
 }
-/* 最后一个 li 的右边距可以去掉（非必要，不影响美观） */
-/* 链接样式保持传统 */
-a:link {
-    color: #0000EE;
-    text-decoration: underline;
-}
-a:visited {
-    color: #551A8B;
-    text-decoration: underline;
-}
-a:hover {
-    text-decoration: underline;
-}
-/* 标题居中 */
+/* 标题放大 */
 h1 {
     text-align: center;
-    margin: 20px 0 10px 0;
-    font-size: 1.4em;
+    margin: 28px 0 16px 0;
+    font-size: 1.8em;
     font-weight: normal;
 }
+/* 单独调整 ICON 可能出现的额外间隔 */
 </style>
 </head>
 <body>
@@ -91,17 +104,17 @@ h1 {
     </form>
 </div>
 
-<!-- ICON 图片下载链接（居中） -->
+<!-- ICON 图片下载链接（按钮样式） -->
 <ul class="link-list">
-    <li><a href="IOCN_1.jpg">ICON</a></li>
+    <li><a href="IOCN_1.jpg" class="button-link">ICON</a></li>
 </ul>
 
 <!-- 小标题 links -->
 <h1>links</h1>
 
-<!-- 外部链接列表（居中） -->
+<!-- 外部链接列表（按钮样式） -->
 <ul class="link-list">
-    <li><a href="http://jailbreak.psp2.dev/" target="_blank">UNLOCK VITA</a></li>
+    <li><a href="http://jailbreak.psp2.dev/" target="_blank" class="button-link">UNLOCK VITA</a></li>
 </ul>
 
 <!-- 
