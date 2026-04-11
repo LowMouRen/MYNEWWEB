@@ -171,19 +171,19 @@ h1 {
     <div class="search-wrapper">
         <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
-            <input type="submit" value="Google Search">
+            <input type="submit" value="Google Search" id="googleSearchBtn">
         </form>
     </div>
     <div class="search-wrapper">
         <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
-            <input type="submit" value="Bing Search">
+            <input type="submit" value="Bing Search" id="bingSearchBtn">
         </form>
     </div>
 
-    <div class="subtitle">Download</div>
+    <div class="subtitle" id="downloadSubtitle">Download</div>
     <div>
-        <button class="primary-btn" onclick="loadAndShowFileList()">Download Selected</button>
+        <button class="primary-btn" onclick="loadAndShowFileList()" id="downloadSelectedBtn">Download Selected</button>
     </div>
     <div id="secondaryDownloadArea"></div>
 
@@ -203,11 +203,81 @@ h1 {
 </div>
 
 <script type="text/javascript">
+// ========== 浏览器语言检测与本地化文本 ==========
+var userLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+var lang = 'en'; // 默认英语
+if (userLang.indexOf('zh-cn') === 0 || userLang.indexOf('zh-hans') === 0 || userLang === 'zh') {
+    lang = 'zh-CN';
+} else if (userLang.indexOf('zh-tw') === 0 || userLang.indexOf('zh-hk') === 0 || userLang.indexOf('zh-mo') === 0 || userLang.indexOf('zh-hant') === 0) {
+    lang = 'zh-TW';
+} else {
+    lang = 'en';
+}
+
+// 本地化文本字典
+var texts = {
+    'en': {
+        googleSearch: 'Google Search',
+        bingSearch: 'Bing Search',
+        downloadTitle: 'Download',
+        downloadSelectedBtn: 'Download Selected',
+        selectPlaceholder: 'No files - click Refresh',
+        refreshBtn: 'Refresh',
+        closeListBtn: 'Close List',
+        downloadBtn: 'Download',
+        fetchingMsg: 'Fetching from GitHub...',
+        noFilesAlert: 'No files found in the repository.',
+        parseErrorAlert: 'Failed to parse file list: ',
+        httpErrorAlert: 'Unable to fetch file list. HTTP error: ',
+        networkErrorAlert: 'Network request failed. Please check your internet connection.',
+        noFileSelectedAlert: 'No file selected. Please click Refresh to load files first.'
+    },
+    'zh-CN': {
+        googleSearch: 'Google 搜索',
+        bingSearch: 'Bing 搜索',
+        downloadTitle: '下载',
+        downloadSelectedBtn: '选择下载',
+        selectPlaceholder: '无文件 - 点击刷新',
+        refreshBtn: '刷新',
+        closeListBtn: '关闭列表',
+        downloadBtn: '下载',
+        fetchingMsg: '正在从 GitHub 获取文件列表...',
+        noFilesAlert: '仓库中没有找到文件。',
+        parseErrorAlert: '解析文件列表失败：',
+        httpErrorAlert: '无法获取文件列表。HTTP 错误：',
+        networkErrorAlert: '网络请求失败，请检查网络连接。',
+        noFileSelectedAlert: '未选择文件，请先点击“刷新”加载文件。'
+    },
+    'zh-TW': {
+        googleSearch: 'Google 搜尋',
+        bingSearch: 'Bing 搜尋',
+        downloadTitle: '下載',
+        downloadSelectedBtn: '選擇下載',
+        selectPlaceholder: '無檔案 - 點擊重新整理',
+        refreshBtn: '重新整理',
+        closeListBtn: '關閉列表',
+        downloadBtn: '下載',
+        fetchingMsg: '正在從 GitHub 獲取檔案列表...',
+        noFilesAlert: '倉庫中沒有找到檔案。',
+        parseErrorAlert: '解析檔案列表失敗：',
+        httpErrorAlert: '無法獲取檔案列表。HTTP 錯誤：',
+        networkErrorAlert: '網路請求失敗，請檢查網路連線。',
+        noFileSelectedAlert: '未選擇檔案，請先點擊「重新整理」載入檔案。'
+    }
+};
+
+var t = texts[lang];
+
+// 应用页面初始文本（搜索框、标题、按钮）
+document.getElementById('googleSearchBtn').value = t.googleSearch;
+document.getElementById('bingSearchBtn').value = t.bingSearch;
+document.getElementById('downloadSubtitle').innerHTML = t.downloadTitle;
+document.getElementById('downloadSelectedBtn').innerHTML = t.downloadSelectedBtn;
+
 // 全局标志，防止刷新时重复点击
 var isRefreshing = false;
 
-// 渲染文件列表面板（无错误参数，错误通过 alert 显示）
-// files: 文件数组 [{name, url}]，若为 null 或空数组则显示空状态
+// 渲染文件列表面板（files 为数组或 null）
 function renderFileListPanel(files) {
     var container = document.getElementById('secondaryDownloadArea');
     if (!container) return;
@@ -229,25 +299,24 @@ function renderFileListPanel(files) {
             html += '<option value="' + safeUrl + '">' + safeName + '</option>';
         }
         html += '</select>';
-        html += '<button class="download-submit" onclick="downloadSelectedFile()" id="downloadBtn">Download</button>';
+        html += '<button class="download-submit" onclick="downloadSelectedFile()" id="downloadBtn">' + t.downloadBtn + '</button>';
     } else {
-        // 空状态：下拉框显示提示，下载按钮禁用
         html += '<select id="dynamicFileSelect" class="file-select" size="1" disabled>';
-        html += '<option value="">No files - click Refresh</option>';
+        html += '<option value="">' + t.selectPlaceholder + '</option>';
         html += '</select>';
-        html += '<button class="download-submit" onclick="downloadSelectedFile()" id="downloadBtn" disabled>Download</button>';
+        html += '<button class="download-submit" onclick="downloadSelectedFile()" id="downloadBtn" disabled>' + t.downloadBtn + '</button>';
     }
     
     html += '<div style="margin-top: 15px;">';
-    html += '<button class="refresh-btn" onclick="refreshFileListFromGitHub()" id="refreshButton">Refresh</button>';
-    html += '<button class="close-btn" onclick="closeDownloadArea()">Close List</button>';
+    html += '<button class="refresh-btn" onclick="refreshFileListFromGitHub()" id="refreshButton">' + t.refreshBtn + '</button>';
+    html += '<button class="close-btn" onclick="closeDownloadArea()">' + t.closeListBtn + '</button>';
     html += '</div>';
     html += '</div>';
     
     container.innerHTML = html;
 }
 
-// 从 GitHub 获取文件列表并更新面板（错误使用 alert 提示）
+// 从 GitHub 获取文件列表
 function refreshFileListFromGitHub() {
     if (isRefreshing) return;
     
@@ -259,17 +328,16 @@ function refreshFileListFromGitHub() {
     }
     isRefreshing = true;
     
-    // 显示加载中提示（临时修改下拉框）
+    // 显示加载中提示
     var container = document.getElementById('secondaryDownloadArea');
     if (container) {
         var selectElem = document.getElementById('dynamicFileSelect');
         if (selectElem) {
-            var wasDisabled = selectElem.disabled;
             selectElem.disabled = true;
             selectElem.options.length = 0;
             var loadingOpt = document.createElement('option');
             loadingOpt.value = '';
-            loadingOpt.text = 'Fetching from GitHub...';
+            loadingOpt.text = t.fetchingMsg;
             selectElem.appendChild(loadingOpt);
             var downloadBtn = document.getElementById('downloadBtn');
             if (downloadBtn) downloadBtn.disabled = true;
@@ -278,7 +346,7 @@ function refreshFileListFromGitHub() {
             loadingDiv.id = 'tempLoadingMsg';
             loadingDiv.style.margin = '10px';
             loadingDiv.style.color = '#0000EE';
-            loadingDiv.innerHTML = 'Fetching file list from GitHub...';
+            loadingDiv.innerHTML = t.fetchingMsg;
             container.appendChild(loadingDiv);
         }
     }
@@ -307,15 +375,15 @@ function refreshFileListFromGitHub() {
                     if (fileList.length > 0) {
                         renderFileListPanel(fileList);
                     } else {
-                        alert('No files found in the repository.');
+                        alert(t.noFilesAlert);
                         renderFileListPanel(null);
                     }
                 } catch(e) {
-                    alert('Failed to parse file list: ' + e.message);
+                    alert(t.parseErrorAlert + e.message);
                     renderFileListPanel(null);
                 }
             } else {
-                alert('Unable to fetch file list. HTTP error: ' + xhr.status + '\nPlease check network or repository.');
+                alert(t.httpErrorAlert + xhr.status + '\nPlease check network or repository.');
                 renderFileListPanel(null);
             }
             isRefreshing = false;
@@ -324,7 +392,7 @@ function refreshFileListFromGitHub() {
     xhr.onerror = function() {
         var tempMsg = document.getElementById('tempLoadingMsg');
         if (tempMsg) tempMsg.parentNode.removeChild(tempMsg);
-        alert('Network request failed. Please check your internet connection.');
+        alert(t.networkErrorAlert);
         renderFileListPanel(null);
         isRefreshing = false;
     };
@@ -375,7 +443,7 @@ function forceDownload(url, filename) {
 function downloadSelectedFile() {
     var select = document.getElementById('dynamicFileSelect');
     if (!select || select.disabled || !select.value || select.value === '') {
-        alert('No file selected. Please click Refresh to load files first.');
+        alert(t.noFileSelectedAlert);
         return;
     }
     var fileUrl = select.value;
@@ -403,11 +471,9 @@ function closeDownloadArea() {
     3. 确保 "IOCN_1.jpg", "IOCN_2.jpg" 也在同一目录
     4. 启用 GitHub Pages 后访问即可
     功能：
-    - 初始打开面板时，下拉框显示 "No files - click Refresh"，下载按钮禁用。
-    - 点击 "Refresh" 按钮从 GitHub 获取文件列表，成功后填充下拉框并启用下载按钮。
-    - Refresh 按钮在请求期间禁用，防止重复点击。
-    - 所有错误信息（网络错误、解析错误、无文件等）通过浏览器 alert 弹出，不显示在面板内。
-    - 强制下载功能兼容老浏览器。
+    - 自动检测浏览器语言（简体中文、繁体中文、英语），界面文本相应切换。
+    - 链接按钮（ICON 1, TOOLBOX2, UNLOCK VITA 等）保持原文不翻译。
+    - 其余功能与之前版本完全一致。
     ============================================================
 -->
 </body>
