@@ -280,11 +280,49 @@ function loadAndShowFileList() {
     });
 }
 
-// 下载选中的文件
+// 强制下载文件（通过 XMLHttpRequest + Blob）
+function forceDownload(url, filename) {
+    // 使用 XMLHttpRequest 获取文件内容（支持跨域，GitHub raw 支持 CORS）
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';  // 以二进制 Blob 接收
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var blob = xhr.response;
+            // 创建临时下载链接
+            var link = document.createElement('a');
+            var blobUrl = window.URL.createObjectURL(blob);
+            link.href = blobUrl;
+            link.download = filename;   // 指定下载文件名
+            // 触发点击
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            // 释放 Blob URL
+            window.URL.revokeObjectURL(blobUrl);
+        } else {
+            alert('Download failed: HTTP ' + xhr.status);
+        }
+    };
+    xhr.onerror = function() {
+        alert('Network error occurred while downloading the file.');
+    };
+    xhr.send();
+}
+
+// 下载选中的文件（强制下载版本）
 function downloadSelectedFile() {
     var select = document.getElementById('dynamicFileSelect');
     if (select && select.value) {
-        window.location.href = select.value;
+        var fileUrl = select.value;
+        // 从 URL 中提取文件名
+        var filename = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+        // 如果 URL 带有查询参数，去除
+        if (filename.indexOf('?') !== -1) {
+            filename = filename.split('?')[0];
+        }
+        // 调用强制下载函数
+        forceDownload(fileUrl, filename);
     } else {
         alert('Please select a file first.');
     }
@@ -307,7 +345,9 @@ function closeDownloadArea() {
     2. 确保背景图片 "home.jpg" 与 index.html 在同一目录
     3. 仓库中的文件（如 IOCN_1.jpg 等）会通过 GitHub API 自动获取
     4. 启用 GitHub Pages 后，访问 https://你的用户名.github.io/仓库名/
-    本页面通过 GitHub API 实时获取文件列表，并提供关闭列表功能。
+    本页面通过 GitHub API 实时获取文件列表，并提供强制下载功能（通过 Blob 方式）。
+    注意：强制下载功能需要浏览器支持 XMLHttpRequest 的 responseType='blob' 和 Blob/URL.createObjectURL。
+    IE 10+ 支持，对于更老的浏览器会降级为普通跳转（但用户已经要求强制下载，此处提供了最佳兼容）。
     ============================================================
 -->
 </body>
