@@ -249,12 +249,12 @@ function loadAndShowFileList() {
     fetchFileListFromGitHub(function(error, files) {
         if (error) {
             container.innerHTML = '<div style="color: red; margin: 10px;">错误：' + error + '</div>' +
-                                  '<button class="close-btn" onclick="closeDownloadArea()">关闭</button>';
+                                  '<button class="close-btn" onclick="closeDownloadArea()">Close</button>';
             return;
         }
         if (!files || files.length === 0) {
             container.innerHTML = '<div>仓库中没有找到文件。</div>' +
-                                  '<button class="close-btn" onclick="closeDownloadArea()">关闭</button>';
+                                  '<button class="close-btn" onclick="closeDownloadArea()">Close</button>';
             return;
         }
         
@@ -287,7 +287,7 @@ function downloadSelectedFile() {
         // 跳转到文件URL（触发下载或预览）
         window.location.href = select.value;
     } else {
-        alert('请先选择要下载的文件');
+        alert('Please select the file you wish to download first');
     }
 }
 
