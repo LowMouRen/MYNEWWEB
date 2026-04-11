@@ -21,7 +21,7 @@ body {
     z-index: 1;
     background-color: #FFFFFF;
 }
-/* 全屏背景图片 - 兼容所有古老浏览器（强制拉伸） */
+/* 全屏背景图片 */
 .bg-image {
     position: fixed;
     top: 0;
@@ -36,12 +36,11 @@ body {
     border: 0;
     display: block;
 }
-/* 内容区域位于背景之上 */
 .content {
     position: relative;
     z-index: 1;
 }
-/* 搜索框容器 */
+/* 搜索框 */
 .search-wrapper {
     margin: 0 0 40px 0;
     padding: 0;
@@ -70,7 +69,7 @@ input[type="submit"] {
     font-size: 1.2em;
     font-weight: bold;
 }
-/* 通用按钮样式 */
+/* 按钮样式 */
 .primary-btn {
     background-color: #EEEEEE;
     border: 3px solid #7F9DB9;
@@ -84,7 +83,6 @@ input[type="submit"] {
 .primary-btn:hover {
     background-color: #DDDDDD;
 }
-/* 下拉列表样式（浏览器原生） */
 .file-select {
     font-size: 1.2em;
     padding: 8px;
@@ -102,18 +100,16 @@ input[type="submit"] {
     cursor: pointer;
     margin-left: 10px;
 }
-/* 网址列表 */
-.link-list {
-    margin: 30px 0 0 0;
-    padding: 0;
-    list-style-type: none;
-    text-align: center;
+.close-btn {
+    background-color: #EEEEEE;
+    border: 2px solid #7F9DB9;
+    color: #0000EE;
+    padding: 6px 18px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 15px;
 }
-.link-list li {
-    display: inline;
-    margin: 0;
-    white-space: nowrap;
-}
+/* 链接按钮 */
 .button-link {
     background-color: #EEEEEE;
     border: 3px solid #7F9DB9;
@@ -131,10 +127,17 @@ input[type="submit"] {
     background-color: #DDDDDD;
     text-decoration: none;
 }
-.button-link:visited {
-    color: #551A8B;
+.link-list {
+    margin: 30px 0 0 0;
+    padding: 0;
+    list-style-type: none;
+    text-align: center;
 }
-/* 小标题样式 */
+.link-list li {
+    display: inline;
+    margin: 0;
+    white-space: nowrap;
+}
 .subtitle {
     text-align: center;
     margin: 30px 0 12px 0;
@@ -147,7 +150,6 @@ h1 {
     font-size: 2.2em;
     font-weight: normal;
 }
-/* 二级菜单容器（初始隐藏） */
 #secondaryDownloadArea {
     margin: 20px auto;
     text-align: center;
@@ -157,21 +159,18 @@ h1 {
 </head>
 <body>
 
-<!-- 全屏背景图片 -->
 <div class="bg-image">
     <img src="home.jpg" alt="background">
 </div>
 
 <div class="content">
-    <!-- 搜索框1：Google 搜索 -->
+    <!-- 搜索框 -->
     <div class="search-wrapper">
         <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
             <input type="submit" value="Google Search">
         </form>
     </div>
-
-    <!-- 搜索框2：Bing 搜索 -->
     <div class="search-wrapper">
         <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
@@ -179,28 +178,20 @@ h1 {
         </form>
     </div>
 
-    <!-- Download 小标题 -->
     <div class="subtitle">Download</div>
-
-    <!-- 主按钮：点击后显示二级菜单并实时获取文件列表 -->
     <div>
         <button class="primary-btn" onclick="loadAndShowFileList()">Download Selected</button>
     </div>
-
-    <!-- 二级菜单容器（用于动态显示文件列表和下载控件） -->
     <div id="secondaryDownloadArea"></div>
 
-    <!-- 原有的 ICON 按钮列表（保留） -->
+    <!-- 原有的快捷下载按钮 -->
     <ul class="link-list">
         <li><a href="IOCN_1.jpg" class="button-link">ICON 1</a></li>
         <li><a href="IOCN_2.jpg" class="button-link">ICON 2</a></li>
         <li><a href="https://lowmouren.github.io/MYNEWWEB/TOOLBOX2.vpk" class="button-link">TOOLBOX2</a></li>
     </ul>
 
-    <!-- 小标题 links -->
     <h1>links</h1>
-
-    <!-- 外部链接列表 -->
     <ul class="link-list">
         <li><a href="http://jailbreak.psp2.dev/" target="_blank" class="button-link">UNLOCK VITA</a></li>
         <li><a href="https://wiki.pretendo.zip/game-support-status" class="button-link">PRETENDO STATUS</a></li>
@@ -210,58 +201,80 @@ h1 {
 </div>
 
 <script type="text/javascript">
-// 模拟实时获取文件列表（实际可从服务器获取 JSON）
-// 为了演示，这里定义了一个静态数组，但通过 setTimeout 模拟异步请求，体现“实时获取”
-// 您也可以替换为 XMLHttpRequest 从服务器加载文件列表（例如 files.json）
-function fetchFileList(callback) {
-    // 模拟网络请求延迟（体现实时获取）
-    setTimeout(function() {
-        // 文件列表数据：包含名称和路径/URL
-        var files = [
-            { name: "IOCN_1.jpg", url: "IOCN_1.jpg" },
-            { name: "IOCN_2.jpg", url: "IOCN_2.jpg" },
-            { name: "TOOLBOX2.vpk", url: "https://lowmouren.github.io/MYNEWWEB/TOOLBOX2.vpk" }
-        ];
-        callback(files);
-    }, 100); // 模拟100ms延迟，体现动态加载
-    // 如果需要真正的实时从服务器获取，可以取消下面的注释，并准备一个 files.json 文件
-    /*
+// 从 GitHub 仓库获取文件列表（使用 GitHub API）
+function fetchFileListFromGitHub(callback) {
+    var apiUrl = 'https://api.github.com/repos/LowMouRen/MYNEWWEB/contents/';
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'files.json', true);
+    xhr.open('GET', apiUrl, true);
     xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            var files = JSON.parse(xhr.responseText);
-            callback(files);
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    var files = JSON.parse(xhr.responseText);
+                    var fileList = [];
+                    for (var i = 0; i < files.length; i++) {
+                        var item = files[i];
+                        // 只显示文件（type === 'file'），忽略目录
+                        if (item.type === 'file') {
+                            fileList.push({
+                                name: item.name,
+                                url: item.download_url   // 原始文件下载链接
+                            });
+                        }
+                    }
+                    callback(null, fileList);
+                } catch(e) {
+                    callback('解析文件列表失败: ' + e.message, null);
+                }
+            } else {
+                callback('无法获取文件列表，HTTP错误: ' + xhr.status, null);
+            }
         }
     };
+    xhr.onerror = function() {
+        callback('网络请求失败，请检查网络或仓库地址是否正确', null);
+    };
     xhr.send();
-    */
 }
 
-// 主函数：点击主按钮后，显示二级菜单，并动态生成文件列表控件
+// 主函数：点击主按钮后显示二级菜单并加载文件列表
 function loadAndShowFileList() {
     var container = document.getElementById('secondaryDownloadArea');
     if (!container) return;
     
-    // 显示二级菜单区域（先清空并显示加载提示）
+    // 显示区域并清空内容，显示加载提示
     container.style.display = 'block';
-    container.innerHTML = '<div style="margin: 10px;">Loading file list...</div>';
+    container.innerHTML = '<div style="margin: 10px;">Load file list...</div>';
     
-    // 实时获取文件列表
-    fetchFileList(function(files) {
+    fetchFileListFromGitHub(function(error, files) {
+        if (error) {
+            container.innerHTML = '<div style="color: red; margin: 10px;">错误：' + error + '</div>' +
+                                  '<button class="close-btn" onclick="closeDownloadArea()">关闭</button>';
+            return;
+        }
         if (!files || files.length === 0) {
-            container.innerHTML = '<div>No files available.</div>';
+            container.innerHTML = '<div>仓库中没有找到文件。</div>' +
+                                  '<button class="close-btn" onclick="closeDownloadArea()">关闭</button>';
             return;
         }
         
-        // 构建下拉列表和下载按钮
-        var html = '<div style="background-color: rgba(238,238,238,0.9); border: 3px solid #7F9DB9; padding: 20px; display: inline-block; min-width: 300px;">';
+        // 构建下拉列表 + 下载按钮 + 关闭按钮
+        var html = '<div style="background-color: rgba(238,238,238,0.9); border: 3px solid #7F9DB9; padding: 20px; display: inline-block; min-width: 320px;">';
         html += '<select id="dynamicFileSelect" class="file-select" size="1">';
         for (var i = 0; i < files.length; i++) {
-            html += '<option value="' + escapeHtml(files[i].url) + '">' + escapeHtml(files[i].name) + '</option>';
+            // 转义文件名中的特殊字符（防止XSS）
+            var safeName = files[i].name.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+            var safeUrl = files[i].url.replace(/&/g, '&amp;'); // 简单转义，但URL中&需要保留，这里作为属性值会自动解码，不做复杂处理
+            html += '<option value="' + safeUrl + '">' + safeName + '</option>';
         }
         html += '</select>';
         html += '<button class="download-submit" onclick="downloadSelectedFile()">Download</button>';
+        html += '<div style="margin-top: 15px;"><button class="close-btn" onclick="closeDownloadArea()">Close list</button></div>';
         html += '</div>';
         container.innerHTML = html;
     });
@@ -271,19 +284,20 @@ function loadAndShowFileList() {
 function downloadSelectedFile() {
     var select = document.getElementById('dynamicFileSelect');
     if (select && select.value) {
+        // 跳转到文件URL（触发下载或预览）
         window.location.href = select.value;
+    } else {
+        alert('请先选择要下载的文件');
     }
 }
 
-// 辅助函数：防止XSS（简单转义）
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
+// 关闭二级菜单区域
+function closeDownloadArea() {
+    var container = document.getElementById('secondaryDownloadArea');
+    if (container) {
+        container.style.display = 'none';
+        container.innerHTML = '';   // 清空内容，下次重新打开会重新获取
+    }
 }
 </script>
 
@@ -292,12 +306,9 @@ function escapeHtml(str) {
     GitHub 部署说明：
     1. 将此文件保存为 index.html
     2. 确保背景图片 "home.jpg" 与 index.html 在同一目录
-    3. 确保 "IOCN_1.jpg", "IOCN_2.jpg" 也在同一目录
-    4. 在 GitHub 上创建仓库并上传所有文件
-    5. 启用 GitHub Pages（Settings → Pages → Branch: main）
-    6. 访问 https://你的用户名.github.io/仓库名/
-    本页面完全兼容古老浏览器，二级菜单的文件列表通过模拟异步请求实现“实时获取”。
-    如需真正的动态列表，可修改 fetchFileList 函数，改为从服务器读取 JSON 文件。
+    3. 仓库中的文件（如 IOCN_1.jpg 等）会通过 GitHub API 自动获取
+    4. 启用 GitHub Pages 后，访问 https://你的用户名.github.io/仓库名/
+    本页面通过 GitHub API 实时获取文件列表，并提供关闭列表功能。
     ============================================================
 -->
 </body>
