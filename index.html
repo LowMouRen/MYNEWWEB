@@ -224,15 +224,15 @@ function fetchFileListFromGitHub(callback) {
                     }
                     callback(null, fileList);
                 } catch(e) {
-                    callback('解析文件列表失败: ' + e.message, null);
+                    callback('Failed to parse file list: ' + e.message, null);
                 }
             } else {
-                callback('无法获取文件列表，HTTP错误: ' + xhr.status, null);
+                callback('Unable to retrieve the file list, HTTP error: ' + xhr.status, null);
             }
         }
     };
     xhr.onerror = function() {
-        callback('网络请求失败，请检查网络或仓库地址是否正确', null);
+        callback('Network request failed, please check if the network or repository address is correct.', null);
     };
     xhr.send();
 }
