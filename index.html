@@ -164,27 +164,28 @@ h1 {
 </div>
 
 <div class="content">
-    <!-- 搜索框 -->
+    <!-- 搜索框1：Google 搜索 -->
     <div class="search-wrapper">
         <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
             <input type="submit" value="Google Search">
         </form>
     </div>
+    <!-- 搜索框2：Bing 搜索 -->
     <div class="search-wrapper">
         <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
-            <input type="submit" value="  bing  Search  ">
+            <input type="submit" value="Bing Search">
         </form>
     </div>
 
     <div class="subtitle">Download</div>
     <div>
-        <button class="primary-btn" onclick="loadAndShowFileList()">Download Selected</button>
+        <button class="primary-btn" onclick="loadAndShowFileList()">📁 Download Selected</button>
     </div>
     <div id="secondaryDownloadArea"></div>
 
-    <!-- 原有的快捷下载按钮 -->
+    <!-- 快捷下载按钮 -->
     <ul class="link-list">
         <li><a href="IOCN_1.jpg" class="button-link">ICON 1</a></li>
         <li><a href="IOCN_2.jpg" class="button-link">ICON 2</a></li>
@@ -218,7 +219,7 @@ function fetchFileListFromGitHub(callback) {
                         if (item.type === 'file') {
                             fileList.push({
                                 name: item.name,
-                                url: item.download_url   // 原始文件下载链接
+                                url: item.download_url
                             });
                         }
                     }
@@ -227,12 +228,12 @@ function fetchFileListFromGitHub(callback) {
                     callback('Failed to parse file list: ' + e.message, null);
                 }
             } else {
-                callback('Unable to retrieve the file list, HTTP error: ' + xhr.status, null);
+                callback('Unable to fetch file list. HTTP error: ' + xhr.status, null);
             }
         }
     };
     xhr.onerror = function() {
-        callback('Network request failed, please check if the network or repository address is correct.', null);
+        callback('Network request failed. Please check network or repository address.', null);
     };
     xhr.send();
 }
@@ -244,16 +245,16 @@ function loadAndShowFileList() {
     
     // 显示区域并清空内容，显示加载提示
     container.style.display = 'block';
-    container.innerHTML = '<div style="margin: 10px;">Load file list...</div>';
+    container.innerHTML = '<div style="margin: 10px;">Fetching file list from repository...</div>';
     
     fetchFileListFromGitHub(function(error, files) {
         if (error) {
-            container.innerHTML = '<div style="color: red; margin: 10px;">错误：' + error + '</div>' +
+            container.innerHTML = '<div style="color: red; margin: 10px;">Error: ' + error + '</div>' +
                                   '<button class="close-btn" onclick="closeDownloadArea()">Close</button>';
             return;
         }
         if (!files || files.length === 0) {
-            container.innerHTML = '<div>仓库中没有找到文件。</div>' +
+            container.innerHTML = '<div>No files found in repository.</div>' +
                                   '<button class="close-btn" onclick="closeDownloadArea()">Close</button>';
             return;
         }
@@ -262,19 +263,18 @@ function loadAndShowFileList() {
         var html = '<div style="background-color: rgba(238,238,238,0.9); border: 3px solid #7F9DB9; padding: 20px; display: inline-block; min-width: 320px;">';
         html += '<select id="dynamicFileSelect" class="file-select" size="1">';
         for (var i = 0; i < files.length; i++) {
-            // 转义文件名中的特殊字符（防止XSS）
             var safeName = files[i].name.replace(/[&<>]/g, function(m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
                 return m;
             });
-            var safeUrl = files[i].url.replace(/&/g, '&amp;'); // 简单转义，但URL中&需要保留，这里作为属性值会自动解码，不做复杂处理
+            var safeUrl = files[i].url.replace(/&/g, '&amp;');
             html += '<option value="' + safeUrl + '">' + safeName + '</option>';
         }
         html += '</select>';
         html += '<button class="download-submit" onclick="downloadSelectedFile()">Download</button>';
-        html += '<div style="margin-top: 15px;"><button class="close-btn" onclick="closeDownloadArea()">Close list</button></div>';
+        html += '<div style="margin-top: 15px;"><button class="close-btn" onclick="closeDownloadArea()">Close List</button></div>';
         html += '</div>';
         container.innerHTML = html;
     });
@@ -284,10 +284,9 @@ function loadAndShowFileList() {
 function downloadSelectedFile() {
     var select = document.getElementById('dynamicFileSelect');
     if (select && select.value) {
-        // 跳转到文件URL（触发下载或预览）
         window.location.href = select.value;
     } else {
-        alert('Please select the file you wish to download first');
+        alert('Please select a file first.');
     }
 }
 
@@ -296,7 +295,7 @@ function closeDownloadArea() {
     var container = document.getElementById('secondaryDownloadArea');
     if (container) {
         container.style.display = 'none';
-        container.innerHTML = '';   // 清空内容，下次重新打开会重新获取
+        container.innerHTML = '';
     }
 }
 </script>
