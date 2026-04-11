@@ -21,7 +21,7 @@ body {
     z-index: 1;
     background-color: #FFFFFF;
 }
-/* 全屏背景图片 */
+/* 全屏背景图片 - 保持比例覆盖全屏，不拉伸变形 */
 .bg-image {
     position: fixed;
     top: 0;
@@ -29,12 +29,25 @@ body {
     width: 100%;
     height: 100%;
     z-index: 0;
+    overflow: hidden;
 }
 .bg-image img {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    display: block;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+/* 兼容不支持 transform 的古老浏览器（IE8 及以下） */
+@media \0screen\,screen\9 {
+    .bg-image img {
+        top: 0;
+        left: 0;
+        transform: none;
+    }
 }
 .content {
     position: relative;
@@ -164,14 +177,12 @@ h1 {
 </div>
 
 <div class="content">
-    <!-- 搜索框1：Google 搜索 -->
     <div class="search-wrapper">
         <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
             <input type="submit" value="Google Search">
         </form>
     </div>
-    <!-- 搜索框2：Bing 搜索 -->
     <div class="search-wrapper">
         <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
@@ -185,7 +196,6 @@ h1 {
     </div>
     <div id="secondaryDownloadArea"></div>
 
-    <!-- 快捷下载按钮 -->
     <ul class="link-list">
         <li><a href="IOCN_1.jpg" class="button-link">ICON 1</a></li>
         <li><a href="IOCN_2.jpg" class="button-link">ICON 2</a></li>
@@ -202,7 +212,7 @@ h1 {
 </div>
 
 <script type="text/javascript">
-// 从 GitHub 仓库获取文件列表（使用 GitHub API）
+// 从 GitHub 仓库获取文件列表
 function fetchFileListFromGitHub(callback) {
     var apiUrl = 'https://api.github.com/repos/LowMouRen/MYNEWWEB/contents/';
     var xhr = new XMLHttpRequest();
@@ -215,7 +225,6 @@ function fetchFileListFromGitHub(callback) {
                     var fileList = [];
                     for (var i = 0; i < files.length; i++) {
                         var item = files[i];
-                        // 只显示文件（type === 'file'），忽略目录
                         if (item.type === 'file') {
                             fileList.push({
                                 name: item.name,
@@ -233,17 +242,15 @@ function fetchFileListFromGitHub(callback) {
         }
     };
     xhr.onerror = function() {
-        callback('Network request failed. Please check network or repository address.', null);
+        callback('Network request failed.', null);
     };
     xhr.send();
 }
 
-// 主函数：点击主按钮后显示二级菜单并加载文件列表
 function loadAndShowFileList() {
     var container = document.getElementById('secondaryDownloadArea');
     if (!container) return;
     
-    // 显示区域并清空内容，显示加载提示
     container.style.display = 'block';
     container.innerHTML = '<div style="margin: 10px;">Fetching file list from repository...</div>';
     
@@ -259,7 +266,6 @@ function loadAndShowFileList() {
             return;
         }
         
-        // 构建下拉列表 + 下载按钮 + 关闭按钮
         var html = '<div style="background-color: rgba(238,238,238,0.9); border: 3px solid #7F9DB9; padding: 20px; display: inline-block; min-width: 320px;">';
         html += '<select id="dynamicFileSelect" class="file-select" size="1">';
         for (var i = 0; i < files.length; i++) {
@@ -280,55 +286,59 @@ function loadAndShowFileList() {
     });
 }
 
-// 强制下载文件（通过 XMLHttpRequest + Blob）
-function forceDownload(url, filename) {
-    // 使用 XMLHttpRequest 获取文件内容（支持跨域，GitHub raw 支持 CORS）
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'blob';  // 以二进制 Blob 接收
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            var blob = xhr.response;
-            // 创建临时下载链接
-            var link = document.createElement('a');
-            var blobUrl = window.URL.createObjectURL(blob);
-            link.href = blobUrl;
-            link.download = filename;   // 指定下载文件名
-            // 触发点击
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            // 释放 Blob URL
-            window.URL.revokeObjectURL(blobUrl);
-        } else {
-            alert('Download failed: HTTP ' + xhr.status);
-        }
-    };
-    xhr.onerror = function() {
-        alert('Network error occurred while downloading the file.');
-    };
-    xhr.send();
+// 检测是否支持强制下载（Blob + createObjectURL）
+function supportsForceDownload() {
+    return window.Blob && window.URL && typeof window.URL.createObjectURL === 'function';
 }
 
-// 下载选中的文件（强制下载版本）
+// 强制下载（现代浏览器）或回退到直接跳转（古老浏览器）
+function downloadFile(url, filename) {
+    if (supportsForceDownload()) {
+        // 现代浏览器：使用 Blob 方式强制下载
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'blob';
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var blob = xhr.response;
+                var link = document.createElement('a');
+                var blobUrl = window.URL.createObjectURL(blob);
+                link.href = blobUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+            } else {
+                alert('Download failed (HTTP ' + xhr.status + '). Falling back to direct link.');
+                window.location.href = url;
+            }
+        };
+        xhr.onerror = function() {
+            alert('Network error. Falling back to direct link.');
+            window.location.href = url;
+        };
+        xhr.send();
+    } else {
+        // 古老浏览器回退：直接跳转，用户可右键另存为
+        window.location.href = url;
+    }
+}
+
 function downloadSelectedFile() {
     var select = document.getElementById('dynamicFileSelect');
     if (select && select.value) {
         var fileUrl = select.value;
-        // 从 URL 中提取文件名
         var filename = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-        // 如果 URL 带有查询参数，去除
         if (filename.indexOf('?') !== -1) {
             filename = filename.split('?')[0];
         }
-        // 调用强制下载函数
-        forceDownload(fileUrl, filename);
+        downloadFile(fileUrl, filename);
     } else {
         alert('Please select a file first.');
     }
 }
 
-// 关闭二级菜单区域
 function closeDownloadArea() {
     var container = document.getElementById('secondaryDownloadArea');
     if (container) {
@@ -339,16 +349,11 @@ function closeDownloadArea() {
 </script>
 
 <!-- 
-    ============================================================
-    GitHub 部署说明：
-    1. 将此文件保存为 index.html
-    2. 确保背景图片 "home.jpg" 与 index.html 在同一目录
-    3. 仓库中的文件（如 IOCN_1.jpg 等）会通过 GitHub API 自动获取
-    4. 启用 GitHub Pages 后，访问 https://你的用户名.github.io/仓库名/
-    本页面通过 GitHub API 实时获取文件列表，并提供强制下载功能（通过 Blob 方式）。
-    注意：强制下载功能需要浏览器支持 XMLHttpRequest 的 responseType='blob' 和 Blob/URL.createObjectURL。
-    IE 10+ 支持，对于更老的浏览器会降级为普通跳转（但用户已经要求强制下载，此处提供了最佳兼容）。
-    ============================================================
+    部署说明：
+    1. 保存为 index.html
+    2. 确保 home.jpg, IOCN_1.jpg, IOCN_2.jpg 在同一目录
+    3. GitHub Pages 启用后访问
+    本页面兼容古老浏览器，Download Selected 功能在不支持 Blob 的浏览器中会自动回退到普通链接跳转。
 -->
 </body>
 </html>
