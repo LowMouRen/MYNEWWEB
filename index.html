@@ -5,40 +5,44 @@
 <title>Hello World</title>
 <style type="text/css">
 /* ========== 极简样式 · 完美兼容古老浏览器 ========== */
-/* 确保 html 和 body 高度100%，背景覆盖全屏 */
+/* 全局重置 */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
 }
 body {
-    /* 背景图片：home.jpg（与 index.html 同一目录） */
-    background-image: url('home.jpg');
-    /* 覆盖全屏，对于支持 background-size 的浏览器 */
-    background-size: cover;
-    /* 居中对齐，防止图片变形 */
-    background-position: center center;
-    /* 不重复 */
-    background-repeat: no-repeat;
-    /* 固定背景，滚动时背景不动（可选） */
-    background-attachment: fixed;
-    
-    /* 以下为原有样式，保持文字居中 */
+    /* 移除原有背景样式，改用 img 标签实现全屏拉伸 */
     color: #000000;
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
     font-size: 20px;
-    
-    /* 为了背景图片完全显示，给内容区域增加内边距，同时保证内容可读 */
     padding: 40px 20px;
-    /* 确保背景覆盖整个视口，即使内容不足 */
-    min-height: 100%;
-    /* 古老浏览器回退：如果 cover 不支持，背景居中且不重复，背景色作为后备 */
-    background-color: #FFFFFF;
+    /* 确保 body 内容在背景图片之上 */
+    position: relative;
+    z-index: 1;
+    background-color: #FFFFFF; /* 后备背景色 */
 }
-/* 针对不支持 background-size: cover 的古老浏览器（如 IE8 及以下），使用滤镜或简单居中 */
-/* 注：IE6/7 也不支持 cover，但会正常显示居中背景图片，可能无法铺满全屏，但已是最佳兼容方案 */
-
+/* 全屏背景图片 - 兼容所有古老浏览器（强制拉伸） */
+.bg-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+.bg-image img {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+/* 内容区域位于背景之上 */
+.content {
+    position: relative;
+    z-index: 1;
+}
 /* 搜索框容器 */
 .search-wrapper {
     margin: 0 0 40px 0;
@@ -119,52 +123,59 @@ h1 {
 </head>
 <body>
 
-<!-- 搜索框1：Google 搜索 -->
-<div class="search-wrapper">
-    <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
-        <input type="text" name="q" size="30">
-        <input type="submit" value="Google Search">
-    </form>
+<!-- 全屏背景图片：强制拉伸填满整个窗口，兼容所有古老浏览器 -->
+<div class="bg-image">
+    <img src="home.jpg" alt="background">
 </div>
 
-<!-- 搜索框2：Bing 搜索 -->
-<div class="search-wrapper">
-    <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
-        <input type="text" name="q" size="30">
-        <input type="submit" value="  bing  Search  ">
-    </form>
+<!-- 页面主要内容 -->
+<div class="content">
+    <!-- 搜索框1：Google 搜索 -->
+    <div class="search-wrapper">
+        <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
+            <input type="text" name="q" size="30">
+            <input type="submit" value="Google Search">
+        </form>
+    </div>
+
+    <!-- 搜索框2：Bing 搜索 -->
+    <div class="search-wrapper">
+        <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
+            <input type="text" name="q" size="30">
+            <input type="submit" value="  bing  Search  ">
+        </form>
+    </div>
+
+    <!-- Download 小标题 -->
+    <div class="subtitle">Download</div>
+
+    <!-- ICON 图片下载链接（按钮样式） -->
+    <ul class="link-list">
+        <li><a href="IOCN_1.jpg" class="button-link">ICON 1</a></li>
+        <li><a href="IOCN_2.jpg" class="button-link">ICON 2</a></li>
+        <li><a href="https://lowmouren.github.io/MYNEWWEB/TOOLBOX2.vpk" class="button-link">TOOLBOX2</a></li>
+    </ul>
+
+    <!-- 小标题 links -->
+    <h1>links</h1>
+
+    <!-- 外部链接列表（按钮样式） -->
+    <ul class="link-list">
+        <li><a href="http://jailbreak.psp2.dev/" target="_blank" class="button-link">UNLOCK VITA</a></li>
+        <li><a href="https://wiki.pretendo.zip/game-support-status" class="button-link">PRETENDO STATUS</a></li>
+    </ul>
 </div>
-
-<!-- Download 小标题 -->
-<div class="subtitle">Download</div>
-
-<!-- ICON 图片下载链接（按钮样式） -->
-<ul class="link-list">
-    <li><a href="IOCN_1.jpg" class="button-link">ICON 1</a></li>
-    <li><a href="IOCN_2.jpg" class="button-link">ICON 2</a></li>
-    <li><a href="https://lowmouren.github.io/MYNEWWEB/TOOLBOX2.vpk" class="button-link">TOOLBOX2</a></li>
-</ul>
-
-<!-- 小标题 links -->
-<h1>links</h1>
-
-<!-- 外部链接列表（按钮样式） -->
-<ul class="link-list">
-    <li><a href="http://jailbreak.psp2.dev/" target="_blank" class="button-link">UNLOCK VITA</a></li>
-    <li><a href="https://wiki.pretendo.zip/game-support-status" class="button-link">PRETENDO STATUS</a></li>
-
-</ul>
 
 <!-- 
     ============================================================
     GitHub 部署说明：
     1. 将此文件保存为 index.html
     2. 确保图片文件 "home.jpg" 与 index.html 在同一目录（根目录）
-    3. 确保 "IOCN_1.jpg" 也在同一目录
+    3. 确保 "IOCN_1.jpg", "IOCN_2.jpg" 也在同一目录
     4. 在 GitHub 上创建仓库并上传所有文件
     5. 启用 GitHub Pages（Settings → Pages → Branch: main）
     6. 访问 https://你的用户名.github.io/仓库名/
-    本页面背景图片自动适应全屏，兼容古老浏览器。
+    本页面背景图片通过 img 标签拉伸全屏，完美兼容所有古老浏览器。
     ============================================================
 -->
 </body>
