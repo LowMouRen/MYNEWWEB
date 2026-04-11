@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Hello World</title>
+<title>Minimal Navigation</title>
 <style type="text/css">
 /* ========== 极简样式 · 完美兼容古老浏览器 ========== */
 /* 无任何现代布局、圆角、阴影、动画、弹性或网格 */
@@ -23,7 +23,7 @@ h1 {
 }
 /* 搜索框容器：使用 HTML align="center" 保证 IE5+ 完美居中 */
 .search-wrapper {
-    margin: 0 0 24px 0;
+    margin: 0 0 16px 0;
     padding: 0;
 }
 .search-form {
@@ -49,7 +49,7 @@ input[type="submit"] {
 }
 /* 网址列表 —— 简单水平排列，自动换行，无项目符号 */
 .link-list {
-    margin: 0;
+    margin: 20px 0 0 0;
     padding: 0;
     list-style-type: none;
 }
@@ -85,15 +85,23 @@ a:hover {
     <span style="color:#EA4335;">e</span>
 </h1>
 
-<!-- 搜索框居中 (align 属性保证老旧浏览器完全居中) -->
+<!-- 搜索框 1: Google 搜索 (居中) -->
 <div align="center" class="search-wrapper">
     <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
         <input type="text" name="q" size="30">
-        <input type="submit" value="Google 搜索">
+        <input type="submit" value="Google Search">
     </form>
 </div>
 
-<!-- 网址导航：简单水平排列，包含大量国外常用网站，无任何图标或装饰 -->
+<!-- 搜索框 2: Bing 搜索 (居中) -->
+<div align="center" class="search-wrapper">
+    <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
+        <input type="text" name="q" size="30">
+        <input type="submit" value="Bing Search">
+    </form>
+</div>
+
+<!-- 网址导航：简单水平排列，包含大量国外常用网站，所有文本为英语 -->
 <ul class="link-list">
     <li><a href="https://www.google.com" target="_blank">Google</a></li>
     <li><a href="https://www.bing.com" target="_blank">Bing</a></li>
@@ -133,6 +141,7 @@ a:hover {
     4. 启用 GitHub Pages（Settings → Pages → Branch: main）
     5. 访问 https://你的用户名.github.io/仓库名/ 即可
     本页面无任何外部依赖，无脚本，完美兼容所有古老浏览器。
+    所有可见文本均为英语，注释保持中文。
     ============================================================
 -->
 </body>
