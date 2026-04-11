@@ -5,15 +5,15 @@
 <title>Hello World</title>
 <style type="text/css">
 /* ========== 极简样式 · 完美兼容古老浏览器 ========== */
-/* 无任何现代布局、圆角、阴影、动画、弹性或网格 */
 body {
     background: #FFFFFF;
     color: #000000;
     font-family: Arial, Helvetica, sans-serif;
     margin: 24px 16px;
     padding: 0;
+    text-align: center;     /* 全局居中，所有块级内容自动居中（古老浏览器也支持） */
 }
-/* 搜索框容器：使用 HTML align="center" 保证 IE5+ 完美居中 */
+/* 搜索框容器不需要额外设置，全局居中已生效，但保留原有结构以防覆盖 */
 .search-wrapper {
     margin: 0 0 20px 0;
     padding: 0;
@@ -28,7 +28,7 @@ input, button {
 }
 input[type="text"] {
     border: 1px solid #7F9DB9;
-    width: 280px;          /* 固定宽度，两个搜索框保持一致 */
+    width: 280px;
     padding: 3px;
     margin: 0 6px 0 0;
     background: #FFFFFF;
@@ -39,23 +39,20 @@ input[type="submit"] {
     cursor: pointer;
     padding: 3px 10px;
 }
-/* 下载区域（极简，居中） */
-.download-area {
-    margin: 20px 0 20px 0;
-    text-align: center;
-}
-/* 网址列表 —— 简单水平排列，自动换行，无项目符号 */
+/* 网址列表 —— 水平排列并居中 */
 .link-list {
     margin: 20px 0 0 0;
     padding: 0;
     list-style-type: none;
+    text-align: center;     /* 使列表内容居中 */
 }
 .link-list li {
-    display: inline;          /* 水平排列，古老浏览器完美支持 */
-    margin-right: 14px;      /* 链接之间的简单间隔 */
-    white-space: nowrap;     /* 每个链接文本不换行，整体自然换行 */
+    display: inline;        /* 水平排列 */
+    margin-right: 14px;     /* 链接间隔 */
+    white-space: nowrap;
 }
-/* 链接保持传统蓝紫配色，无悬停特效，仅下划线 */
+/* 最后一个 li 的右边距可以去掉（非必要，不影响美观） */
+/* 链接样式保持传统 */
 a:link {
     color: #0000EE;
     text-decoration: underline;
@@ -67,41 +64,46 @@ a:visited {
 a:hover {
     text-decoration: underline;
 }
-/* 无浮动、无定位、无任何多余修饰 */
+/* 标题居中 */
+h1 {
+    text-align: center;
+    margin: 20px 0 10px 0;
+    font-size: 1.4em;
+    font-weight: normal;
+}
 </style>
 </head>
 <body>
 
-<!-- 无彩色 Google 标题（已按要求移除） -->
-
-<!-- 搜索框1：Google 搜索（居中） -->
-<div align="center" class="search-wrapper">
+<!-- 搜索框1：Google 搜索 -->
+<div class="search-wrapper">
     <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
         <input type="text" name="q" size="30">
         <input type="submit" value="Google Search">
     </form>
 </div>
 
-<!-- 搜索框2：Bing 搜索（居中，与 Google 搜索框宽度一致） -->
-<div align="center" class="search-wrapper">
+<!-- 搜索框2：Bing 搜索 -->
+<div class="search-wrapper">
     <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
         <input type="text" name="q" size="30">
         <input type="submit" value="Bing Search">
     </form>
 </div>
 
-
-
+<!-- ICON 图片下载链接（居中） -->
 <ul class="link-list">
     <li><a href="IOCN_1.jpg">ICON</a></li>
 </ul>
 
-<h1 style="text-align: center;">links</h1>
-    
-</ul>
+<!-- 小标题 links -->
+<h1>links</h1>
+
+<!-- 外部链接列表（居中） -->
 <ul class="link-list">
     <li><a href="http://jailbreak.psp2.dev/" target="_blank">UNLOCK VITA</a></li>
 </ul>
+
 <!-- 
     ============================================================
     GitHub 部署说明：
