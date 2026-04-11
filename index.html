@@ -21,7 +21,7 @@ body {
     z-index: 1;
     background-color: #FFFFFF;
 }
-/* 全屏背景图片 - 保持比例覆盖全屏，不拉伸变形 */
+/* 全屏背景图片 - 强制拉伸（恢复之前版本） */
 .bg-image {
     position: fixed;
     top: 0;
@@ -29,25 +29,12 @@ body {
     width: 100%;
     height: 100%;
     z-index: 0;
-    overflow: hidden;
 }
 .bg-image img {
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-/* 兼容不支持 transform 的古老浏览器（IE8 及以下） */
-@media \0screen\,screen\9 {
-    .bg-image img {
-        top: 0;
-        left: 0;
-        transform: none;
-    }
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
 }
 .content {
     position: relative;
@@ -177,12 +164,14 @@ h1 {
 </div>
 
 <div class="content">
+    <!-- 搜索框1：Google 搜索 -->
     <div class="search-wrapper">
         <form method="get" action="https://www.google.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
             <input type="submit" value="Google Search">
         </form>
     </div>
+    <!-- 搜索框2：Bing 搜索 -->
     <div class="search-wrapper">
         <form method="get" action="https://www.bing.com/search" target="_blank" class="search-form">
             <input type="text" name="q" size="30">
@@ -196,6 +185,7 @@ h1 {
     </div>
     <div id="secondaryDownloadArea"></div>
 
+    <!-- 快捷下载按钮 -->
     <ul class="link-list">
         <li><a href="IOCN_1.jpg" class="button-link">ICON 1</a></li>
         <li><a href="IOCN_2.jpg" class="button-link">ICON 2</a></li>
@@ -212,7 +202,7 @@ h1 {
 </div>
 
 <script type="text/javascript">
-// 从 GitHub 仓库获取文件列表
+// 从 GitHub 仓库获取文件列表（使用 GitHub API）
 function fetchFileListFromGitHub(callback) {
     var apiUrl = 'https://api.github.com/repos/LowMouRen/MYNEWWEB/contents/';
     var xhr = new XMLHttpRequest();
@@ -242,7 +232,7 @@ function fetchFileListFromGitHub(callback) {
         }
     };
     xhr.onerror = function() {
-        callback('Network request failed.', null);
+        callback('Network request failed. Please check network or repository address.', null);
     };
     xhr.send();
 }
@@ -286,43 +276,30 @@ function loadAndShowFileList() {
     });
 }
 
-// 检测是否支持强制下载（Blob + createObjectURL）
-function supportsForceDownload() {
-    return window.Blob && window.URL && typeof window.URL.createObjectURL === 'function';
-}
-
-// 强制下载（现代浏览器）或回退到直接跳转（古老浏览器）
-function downloadFile(url, filename) {
-    if (supportsForceDownload()) {
-        // 现代浏览器：使用 Blob 方式强制下载
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'blob';
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                var blob = xhr.response;
-                var link = document.createElement('a');
-                var blobUrl = window.URL.createObjectURL(blob);
-                link.href = blobUrl;
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(blobUrl);
-            } else {
-                alert('Download failed (HTTP ' + xhr.status + '). Falling back to direct link.');
-                window.location.href = url;
-            }
-        };
-        xhr.onerror = function() {
-            alert('Network error. Falling back to direct link.');
-            window.location.href = url;
-        };
-        xhr.send();
-    } else {
-        // 古老浏览器回退：直接跳转，用户可右键另存为
-        window.location.href = url;
-    }
+// 强制下载文件（通过 XMLHttpRequest + Blob）
+function forceDownload(url, filename) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var blob = xhr.response;
+            var link = document.createElement('a');
+            var blobUrl = window.URL.createObjectURL(blob);
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        } else {
+            alert('Download failed: HTTP ' + xhr.status);
+        }
+    };
+    xhr.onerror = function() {
+        alert('Network error occurred while downloading the file.');
+    };
+    xhr.send();
 }
 
 function downloadSelectedFile() {
@@ -333,7 +310,7 @@ function downloadSelectedFile() {
         if (filename.indexOf('?') !== -1) {
             filename = filename.split('?')[0];
         }
-        downloadFile(fileUrl, filename);
+        forceDownload(fileUrl, filename);
     } else {
         alert('Please select a file first.');
     }
@@ -349,11 +326,14 @@ function closeDownloadArea() {
 </script>
 
 <!-- 
-    部署说明：
-    1. 保存为 index.html
-    2. 确保 home.jpg, IOCN_1.jpg, IOCN_2.jpg 在同一目录
-    3. GitHub Pages 启用后访问
-    本页面兼容古老浏览器，Download Selected 功能在不支持 Blob 的浏览器中会自动回退到普通链接跳转。
+    ============================================================
+    GitHub 部署说明：
+    1. 将此文件保存为 index.html
+    2. 确保背景图片 "home.jpg" 与 index.html 在同一目录
+    3. 仓库中的文件（如 IOCN_1.jpg 等）会通过 GitHub API 自动获取
+    4. 启用 GitHub Pages 后，访问 https://你的用户名.github.io/仓库名/
+    背景图片已恢复为强制拉伸全屏版本（width:100%; height:100%）。
+    ============================================================
 -->
 </body>
 </html>
