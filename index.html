@@ -21,6 +21,7 @@ body {
     z-index: 1;
     background-color: #FFFFFF;
 }
+/* 全屏背景图片容器 - 动态切换图片 */
 .bg-image {
     position: fixed;
     top: 0;
@@ -163,8 +164,9 @@ h1 {
 </head>
 <body>
 
-<div class="bg-image">
-    <img src="home.jpg" alt="background">
+<!-- 全屏背景图片容器 -->
+<div class="bg-image" id="bgImageContainer">
+    <img src="home.jpg" alt="background" id="bgImg">
 </div>
 
 <div class="content">
@@ -280,6 +282,42 @@ document.getElementById('googleSearchBtn').value = t.googleSearch;
 document.getElementById('bingSearchBtn').value = t.bingSearch;
 document.getElementById('downloadSubtitle').innerHTML = t.downloadTitle;
 document.getElementById('downloadSelectedBtn').innerHTML = t.downloadSelectedBtn;
+
+// ========== 屏幕分辨率检测与背景图片切换 ==========
+// 检测是否为竖屏模式（手机竖屏）或宽度小于768px
+function isMobilePortrait() {
+    var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    // 条件：宽度小于高度（竖屏）或者宽度小于768px（手机）
+    return (width < height) || (width < 768);
+}
+
+// 切换背景图片
+function switchBackgroundImage() {
+    var bgImg = document.getElementById('bgImg');
+    if (!bgImg) return;
+    
+    if (isMobilePortrait()) {
+        bgImg.src = 'home2.jpg';
+    } else {
+        bgImg.src = 'home.jpg';
+    }
+}
+
+// 监听窗口大小变化（当分辨率改变时重新检测）
+if (window.addEventListener) {
+    window.addEventListener('resize', function() {
+        switchBackgroundImage();
+    });
+} else if (window.attachEvent) {
+    // 兼容 IE8 及以下
+    window.attachEvent('onresize', function() {
+        switchBackgroundImage();
+    });
+}
+
+// 页面加载时执行一次背景切换
+switchBackgroundImage();
 
 // 全局标志，防止刷新时重复点击
 var isRefreshing = false;
@@ -474,13 +512,14 @@ function closeDownloadArea() {
     ============================================================
     GitHub 部署说明：
     1. 将此文件保存为 index.html
-    2. 确保背景图片 "home.jpg" 与 index.html 在同一目录
-    3. 确保 "IOCN_1.jpg", "IOCN_2.jpg" 也在同一目录
+    2. 确保背景图片 "home.jpg" 和 "home2.jpg" 与 index.html 在同一目录
+    3. 确保其他文件（IOCN_1.jpg, IOCN_2.jpg, TOOLBOX2.vpk 等）也在同一目录
     4. 启用 GitHub Pages 后访问即可
     功能：
-    - 自动检测浏览器语言（简体中文、繁体中文、英语），界面文本相应切换。
-    - 链接按钮（ICON 1, TOOLBOX2, UNLOCK VITA 等）保持原文不翻译。
-    - 其余功能与之前版本完全一致。
+    - 自动检测屏幕分辨率，竖屏或手机宽度(<768px)时使用 home2.jpg，否则使用 home.jpg
+    - 窗口大小改变时自动切换背景图片
+    - 自动检测浏览器语言（简体中文、繁体中文、英语），界面文本相应切换
+    - 链接按钮保持原文不翻译
     ============================================================
 -->
 </body>
