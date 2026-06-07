@@ -40,6 +40,23 @@ body {
     position: relative;
     z-index: 1;
 }
+/* 右上角语言选择器 */
+.lang-selector {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    z-index: 2;
+    background-color: rgba(238,238,238,0.9);
+    border: 2px solid #7F9DB9;
+    padding: 5px 10px;
+    font-size: 0.8em;
+}
+.lang-selector select {
+    font-size: 0.9em;
+    background: #FFFFFF;
+    border: 1px solid #7F9DB9;
+    padding: 3px 5px;
+}
 .search-wrapper {
     margin: 0 0 40px 0;
     padding: 0;
@@ -160,6 +177,16 @@ h1 {
     text-align: center;
     display: none;
 }
+/* 直接访问 URL 区域 */
+.direct-url-wrapper {
+    margin: 0 0 40px 0;
+    padding: 0;
+    text-align: center;
+}
+.direct-url-wrapper .search-form {
+    margin: 0;
+    padding: 0;
+}
 </style>
 </head>
 <body>
@@ -167,6 +194,15 @@ h1 {
 <!-- 全屏背景图片容器 -->
 <div class="bg-image" id="bgImageContainer">
     <img src="home.jpg" alt="background" id="bgImg">
+</div>
+
+<!-- 右上角语言选择器 -->
+<div class="lang-selector">
+    <select id="langSelect" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="zh-CN">简体中文</option>
+        <option value="zh-TW">繁體中文</option>
+    </select>
 </div>
 
 <div class="content">
@@ -183,6 +219,14 @@ h1 {
         </form>
     </div>
 
+    <!-- 直接访问 URL 功能 -->
+    <div class="direct-url-wrapper">
+        <form onsubmit="goToUrl(); return false;" class="search-form">
+            <input type="text" id="urlInput" size="30" placeholder="https://example.com">
+            <input type="submit" value="Go to URL" id="goUrlBtn">
+        </form>
+    </div>
+
     <div class="subtitle" id="downloadSubtitle">Download</div>
     <div>
         <button class="primary-btn" onclick="loadAndShowFileList()" id="downloadSelectedBtn">Download Selected</button>
@@ -190,7 +234,7 @@ h1 {
     <div id="secondaryDownloadArea"></div>
 
     <ul class="link-list">
-        <li><a href=https://www.youtube.com/" class="button-link">YouTube</a></li>
+        <li><a href="https://www.youtube.com/" class="button-link">YouTube</a></li>
         <li><a href="IOCN_1.jpg" class="button-link">ICON 1</a></li>
         <li><a href="IOCN_2.jpg" class="button-link">ICON 2</a></li>
         <li><a href="TOOLBOX2.vpk" class="button-link">TOOLBOX2</a></li>
@@ -214,15 +258,13 @@ h1 {
         <li><a href="https://eaglercraft.com/" class="button-link">eaglercraft</a></li>
         <li><a href="http://minesweeper.cn/" class="button-link">minesweeper</a></li>
         <li><a href="https://www.mariogames.be/nes/" class="button-link">NES</a></li>
-        
-        
     </ul>
 </div>
 
 <script type="text/javascript">
 // ========== 浏览器语言检测与本地化文本 ==========
 var userLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-var lang = 'en'; // 默认英语
+var lang = 'en';
 if (userLang.indexOf('zh-cn') === 0 || userLang.indexOf('zh-hans') === 0 || userLang === 'zh') {
     lang = 'zh-CN';
 } else if (userLang.indexOf('zh-tw') === 0 || userLang.indexOf('zh-hk') === 0 || userLang.indexOf('zh-mo') === 0 || userLang.indexOf('zh-hant') === 0) {
@@ -231,11 +273,16 @@ if (userLang.indexOf('zh-cn') === 0 || userLang.indexOf('zh-hans') === 0 || user
     lang = 'en';
 }
 
+// 设置下拉框的当前值
+document.getElementById('langSelect').value = lang;
+
 // 本地化文本字典
 var texts = {
     'en': {
         googleSearch: 'Google Search',
         bingSearch: 'Bing Search',
+        goToUrl: 'Go to URL',
+        urlPlaceholder: 'https://example.com',
         downloadTitle: 'Download',
         downloadSelectedBtn: 'Download Selected',
         selectPlaceholder: 'No files - click Refresh',
@@ -247,11 +294,14 @@ var texts = {
         parseErrorAlert: 'Failed to parse file list: ',
         httpErrorAlert: 'Unable to fetch file list. HTTP error: ',
         networkErrorAlert: 'Network request failed. Please check your internet connection.',
-        noFileSelectedAlert: 'No file selected. Please click Refresh to load files first.'
+        noFileSelectedAlert: 'No file selected. Please click Refresh to load files first.',
+        invalidUrlAlert: 'Please enter a valid URL (starting with http:// or https://)'
     },
     'zh-CN': {
         googleSearch: 'Google 搜索',
         bingSearch: 'Bing 搜索',
+        goToUrl: '访问网址',
+        urlPlaceholder: 'https://example.com',
         downloadTitle: '下载',
         downloadSelectedBtn: '选择下载',
         selectPlaceholder: '无文件 - 点击刷新',
@@ -263,11 +313,14 @@ var texts = {
         parseErrorAlert: '解析文件列表失败：',
         httpErrorAlert: '无法获取文件列表。HTTP 错误：',
         networkErrorAlert: '网络请求失败，请检查网络连接。',
-        noFileSelectedAlert: '未选择文件，请先点击“刷新”加载文件。'
+        noFileSelectedAlert: '未选择文件，请先点击“刷新”加载文件。',
+        invalidUrlAlert: '请输入有效的网址（以 http:// 或 https:// 开头）'
     },
     'zh-TW': {
         googleSearch: 'Google 搜尋',
         bingSearch: 'Bing 搜尋',
+        goToUrl: '訪問網址',
+        urlPlaceholder: 'https://example.com',
         downloadTitle: '下載',
         downloadSelectedBtn: '選擇下載',
         selectPlaceholder: '無檔案 - 點擊重新整理',
@@ -279,32 +332,70 @@ var texts = {
         parseErrorAlert: '解析檔案列表失敗：',
         httpErrorAlert: '無法獲取檔案列表。HTTP 錯誤：',
         networkErrorAlert: '網路請求失敗，請檢查網路連線。',
-        noFileSelectedAlert: '未選擇檔案，請先點擊「重新整理」載入檔案。'
+        noFileSelectedAlert: '未選擇檔案，請先點擊「重新整理」載入檔案。',
+        invalidUrlAlert: '請輸入有效的網址（以 http:// 或 https:// 開頭）'
     }
 };
 
 var t = texts[lang];
 
-// 应用页面初始文本（搜索框、标题、按钮）
-document.getElementById('googleSearchBtn').value = t.googleSearch;
-document.getElementById('bingSearchBtn').value = t.bingSearch;
-document.getElementById('downloadSubtitle').innerHTML = t.downloadTitle;
-document.getElementById('downloadSelectedBtn').innerHTML = t.downloadSelectedBtn;
+// 应用页面初始文本
+function applyLanguage() {
+    document.getElementById('googleSearchBtn').value = t.googleSearch;
+    document.getElementById('bingSearchBtn').value = t.bingSearch;
+    document.getElementById('goUrlBtn').value = t.goToUrl;
+    document.getElementById('urlInput').placeholder = t.urlPlaceholder;
+    document.getElementById('downloadSubtitle').innerHTML = t.downloadTitle;
+    document.getElementById('downloadSelectedBtn').innerHTML = t.downloadSelectedBtn;
+    
+    // 如果下载面板已打开，刷新面板文本
+    var container = document.getElementById('secondaryDownloadArea');
+    if (container && container.style.display === 'block' && container.innerHTML !== '') {
+        // 重新渲染面板（保持当前文件列表）
+        if (currentFileList && currentFileList.length > 0) {
+            renderFileListPanel(currentFileList);
+        } else {
+            renderFileListPanel(null);
+        }
+    }
+}
+
+// 直接访问 URL 函数
+function goToUrl() {
+    var urlInput = document.getElementById('urlInput');
+    var url = urlInput.value.trim();
+    if (url === '') {
+        alert(t.invalidUrlAlert);
+        return;
+    }
+    // 如果没有协议前缀，自动添加 https://
+    if (!url.match(/^https?:\/\//i)) {
+        url = 'https://' + url;
+    }
+    window.location.href = url;
+}
+
+// 语言切换函数
+function changeLanguage() {
+    var select = document.getElementById('langSelect');
+    lang = select.value;
+    t = texts[lang];
+    applyLanguage();
+}
+
+// 存储当前文件列表（用于语言切换时刷新面板）
+var currentFileList = null;
 
 // ========== 屏幕分辨率检测与背景图片切换 ==========
-// 检测是否为竖屏模式（手机竖屏）或宽度小于768px
 function isMobilePortrait() {
     var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    // 条件：宽度小于高度（竖屏）或者宽度小于768px（手机）
     return (width < height) || (width < 768);
 }
 
-// 切换背景图片
 function switchBackgroundImage() {
     var bgImg = document.getElementById('bgImg');
     if (!bgImg) return;
-    
     if (isMobilePortrait()) {
         bgImg.src = 'home2.jpg';
     } else {
@@ -312,28 +403,26 @@ function switchBackgroundImage() {
     }
 }
 
-// 监听窗口大小变化（当分辨率改变时重新检测）
 if (window.addEventListener) {
     window.addEventListener('resize', function() {
         switchBackgroundImage();
     });
 } else if (window.attachEvent) {
-    // 兼容 IE8 及以下
     window.attachEvent('onresize', function() {
         switchBackgroundImage();
     });
 }
-
-// 页面加载时执行一次背景切换
 switchBackgroundImage();
 
 // 全局标志，防止刷新时重复点击
 var isRefreshing = false;
 
-// 渲染文件列表面板（files 为数组或 null）
+// 渲染文件列表面板
 function renderFileListPanel(files) {
     var container = document.getElementById('secondaryDownloadArea');
     if (!container) return;
+    
+    currentFileList = files; // 保存当前文件列表
     
     var html = '<div style="background-color: rgba(238,238,238,0.9); border: 3px solid #7F9DB9; padding: 20px; display: inline-block; min-width: 320px;">';
     
@@ -381,7 +470,6 @@ function refreshFileListFromGitHub() {
     }
     isRefreshing = true;
     
-    // 显示加载中提示
     var container = document.getElementById('secondaryDownloadArea');
     if (container) {
         var selectElem = document.getElementById('dynamicFileSelect');
@@ -426,6 +514,7 @@ function refreshFileListFromGitHub() {
                         }
                     }
                     if (fileList.length > 0) {
+                        currentFileList = fileList;
                         renderFileListPanel(fileList);
                     } else {
                         alert(t.noFilesAlert);
@@ -452,7 +541,6 @@ function refreshFileListFromGitHub() {
     xhr.send();
 }
 
-// 打开面板（初始显示空列表）
 function loadAndShowFileList() {
     var container = document.getElementById('secondaryDownloadArea');
     if (!container) return;
@@ -463,7 +551,6 @@ function loadAndShowFileList() {
     renderFileListPanel(null);
 }
 
-// 强制下载文件（兼容老浏览器）
 function forceDownload(url, filename) {
     if (window.XMLHttpRequest && window.Blob && window.URL && window.URL.createObjectURL) {
         var xhr = new XMLHttpRequest();
@@ -512,8 +599,12 @@ function closeDownloadArea() {
     if (container) {
         container.style.display = 'none';
         container.innerHTML = '';
+        currentFileList = null;
     }
 }
+
+// 初始应用语言
+applyLanguage();
 </script>
 
 <!-- 
@@ -523,11 +614,9 @@ function closeDownloadArea() {
     2. 确保背景图片 "home.jpg" 和 "home2.jpg" 与 index.html 在同一目录
     3. 确保其他文件（IOCN_1.jpg, IOCN_2.jpg, TOOLBOX2.vpk 等）也在同一目录
     4. 启用 GitHub Pages 后访问即可
-    功能：
-    - 自动检测屏幕分辨率，竖屏或手机宽度(<768px)时使用 home2.jpg，否则使用 home.jpg
-    - 窗口大小改变时自动切换背景图片
-    - 自动检测浏览器语言（简体中文、繁体中文、英语），界面文本相应切换
-    - 链接按钮保持原文不翻译
+    新增功能：
+    - 右上角语言选择器（简体中文/繁体中文/English）
+    - Bing 搜索下方添加了"直接访问 URL"功能
     ============================================================
 -->
 </body>
